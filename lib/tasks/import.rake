@@ -24,6 +24,13 @@ namespace :import do
       DELIMITER ','
       CSV HEADER
     SQL
-    CovidStat.connection.execute(sql)
+
+    ActiveRecord::Base.transaction do
+      puts "Removing existing records..."
+      CovidStat.delete_all
+      puts "Importing new records..."
+      results = CovidStat.connection.execute(sql)
+      puts "Successfully imported #{results.cmd_tuples} records"
+    end
   end
 end
